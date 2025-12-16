@@ -1,6 +1,93 @@
 @Candidate.System.API_HostAddress = http://localhost:5157
 
-GET {{Candidate.System.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Process Single Candidate
+POST {{Candidate.System.API_HostAddress}}/api/candidate/process
+Content-Type: application/json
+
+[
+  {
+    "candidateId": "C001",
+    "candidateName": "John Doe",
+    "category": 1,
+    "marks": 85.5,
+    "timestamp": "2024-01-15T10:30:00Z"
+  }
+]
+
+### Process Multiple Candidates
+POST {{Candidate.System.API_HostAddress}}/api/candidate/process
+Content-Type: application/json
+
+[
+  {
+    "candidateId": "C001",
+    "candidateName": "John Doe",
+    "category": 1,
+    "marks": 85.5,
+    "timestamp": "2024-01-15T10:30:00Z"
+  },
+  {
+    "candidateId": "C002",
+    "candidateName": "Jane Smith",
+    "category": 4,
+    "marks": 78.2,
+    "timestamp": "2024-01-15T10:31:00Z"
+  },
+  {
+    "candidateId": "C003",
+    "candidateName": "Raj Patel",
+    "category": 2,
+    "marks": 92.0,
+    "timestamp": "2024-01-15T10:32:00Z"
+  }
+]
+
+### Submit Candidates for Batch Processing
+POST {{Candidate.System.API_HostAddress}}/api/candidate/submit
+Content-Type: application/json
+
+[
+  {
+    "candidateId": "C004",
+    "candidateName": "Priya Sharma",
+    "category": 5,
+    "marks": 88.7,
+    "timestamp": "2024-01-15T10:33:00Z"
+  },
+  {
+    "candidateId": "C005",
+    "candidateName": "Amit Kumar",
+    "category": 3,
+    "marks": 76.3,
+    "timestamp": "2024-01-15T10:34:00Z"
+  }
+]
+
+### Dual Reservation Candidates
+POST {{Candidate.System.API_HostAddress}}/api/candidate/process
+Content-Type: application/json
+
+[
+  {
+    "candidateId": "C006",
+    "candidateName": "Sunita Verma",
+    "category": 5,
+    "marks": 89.5,
+    "timestamp": "2024-01-15T10:35:00Z"
+  },
+  {
+    "candidateId": "C007",
+    "candidateName": "Kavita Singh",
+    "category": 6,
+    "marks": 82.1,
+    "timestamp": "2024-01-15T10:36:00Z"
+  }
+]
+
+### Start Streaming Service
+POST {{Candidate.System.API_HostAddress}}/api/candidate/start-streaming
+
+### Stop Streaming Service
+POST {{Candidate.System.API_HostAddress}}/api/candidate/stop-streaming
 
 ###

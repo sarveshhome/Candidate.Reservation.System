@@ -6,6 +6,7 @@ namespace Candidate.System.Application.Services;
 
 public class StreamingService : IStreamingService
 {
+    private readonly ICandidateRepository _candidateRepository;
     private readonly ISelectionService _selectionService;
     private readonly ILogger<StreamingService> _logger;
     private readonly Timer? _processingTimer;
@@ -15,8 +16,12 @@ public class StreamingService : IStreamingService
 
     public event EventHandler<IEnumerable<SelectionResultDto>>? ResultsProcessed;
 
-    public StreamingService(ISelectionService selectionService, ILogger<StreamingService> logger)
+    public StreamingService(
+        ICandidateRepository candidateRepository,
+        ISelectionService selectionService, 
+        ILogger<StreamingService> logger)
     {
+        _candidateRepository = candidateRepository;
         _selectionService = selectionService;
         _logger = logger;
     }
@@ -83,11 +88,23 @@ public class StreamingService : IStreamingService
         {
             _logger.LogInformation($"Processing batch of {candidatesToProcess.Count} candidates");
             
+            // Save candidates to database
+            var candidateEntities = candidatesToProcess.Select(dto => new Domain.Entities.Candidate
+            {
+                CandidateId = dto.CandidateId,
+                CandidateName = dto.CandidateName,
+                Category = dto.Category,
+                Marks = dto.Marks,
+                Timestamp = dto.Timestamp
+            });
+            
+            await _candidateRepository.AddRangeAsync(candidateEntities);
+            
             var results = await _selectionService.ProcessCandidatesAsync(candidatesToProcess);
             
             ResultsProcessed?.Invoke(this, results);
             
-            _logger.LogInformation($"Successfully processed {results.Count()} candidates");
+            _logger.LogInformation($"Successfully processed and saved {results.Count()} candidates");
         }
         catch (Exception ex)
         {
