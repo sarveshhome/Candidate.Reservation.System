@@ -1,0 +1,57 @@
+name: Build and Publish to Release Train
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Set version
+      run: echo "VERSION=${{ github.event.inputs.version || github.ref_name }}" >> $GITHUB_ENV
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release --no-restore /p:Version=${{ env.VERSION }}
+    
+    - name: Test
+      run: dotnet test --configuration Release --no-build
+    
+    - name: Publish API
+      run: dotnet publish src/Candidate.System.API/Candidate.System.API.csproj -c Release -o ./release/api /p:Version=${{ env.VERSION }}
+    
+    - name: Publish Web
+      run: dotnet publish src/Candidate.System.Web/Candidate.System.Web.csproj -c Release -o ./release/web /p:Version=${{ env.VERSION }}
+    
+    - name: Create release package
+      run: |
+        cd release
+        tar -czf candidate-system-${{ env.VERSION }}.tar.gz api web
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ env.VERSION }}
+        name: Release ${{ env.VERSION }}
+        files: release/candidate-system-${{ env.VERSION }}.tar.gz
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

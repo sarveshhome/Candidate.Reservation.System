@@ -1,0 +1,43 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '9.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --configuration Release
+    
+    - name: Publish API
+      run: dotnet publish src/Candidate.System.API/Candidate.System.API.csproj -c Release -o ./publish/api
+    
+    - name: Publish Web
+      run: dotnet publish src/Candidate.System.Web/Candidate.System.Web.csproj -c Release -o ./publish/web
+    
+    - name: Upload API artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: api-artifacts
+        path: ./publish/api
+    
+    - name: Upload Web artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: web-artifacts
+        path: ./publish/web
