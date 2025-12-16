@@ -221,3 +221,6 @@ dotnet ef database update --project src/Candidate.System.Infrastructure --startu
 - [ ] Historical data analysis
 - [ ] Performance monitoring
 - [ ] Integration tests
+- [ ] 
+
+<img width="1507" height="848" alt="Screenshot 2025-12-16 at 5 43 27 PM" src="https://github.com/user-attachments/assets/68c7b10b-e976-4b2c-8ebd-163b57d821d7" />
