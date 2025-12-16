@@ -1,0 +1,72 @@
+[
+  {
+    "candidateId": "C001",
+    "candidateName": "Rajesh Kumar",
+    "category": 1,
+    "marks": 92.5,
+    "timestamp": "2024-01-15T10:30:00Z"
+  },
+  {
+    "candidateId": "C002",
+    "candidateName": "Priya Sharma",
+    "category": 4,
+    "marks": 88.2,
+    "timestamp": "2024-01-15T10:31:00Z"
+  },
+  {
+    "candidateId": "C003",
+    "candidateName": "Amit Singh",
+    "category": 2,
+    "marks": 85.7,
+    "timestamp": "2024-01-15T10:32:00Z"
+  },
+  {
+    "candidateId": "C004",
+    "candidateName": "Sunita Devi",
+    "category": 5,
+    "marks": 82.3,
+    "timestamp": "2024-01-15T10:33:00Z"
+  },
+  {
+    "candidateId": "C005",
+    "candidateName": "Ravi Patel",
+    "category": 3,
+    "marks": 79.8,
+    "timestamp": "2024-01-15T10:34:00Z"
+  },
+  {
+    "candidateId": "C006",
+    "candidateName": "Meera Gupta",
+    "category": 6,
+    "marks": 87.1,
+    "timestamp": "2024-01-15T10:35:00Z"
+  },
+  {
+    "candidateId": "C007",
+    "candidateName": "Vikash Yadav",
+    "category": 1,
+    "marks": 91.4,
+    "timestamp": "2024-01-15T10:36:00Z"
+  },
+  {
+    "candidateId": "C008",
+    "candidateName": "Kavita Joshi",
+    "category": 4,
+    "marks": 84.6,
+    "timestamp": "2024-01-15T10:37:00Z"
+  },
+  {
+    "candidateId": "C009",
+    "candidateName": "Suresh Verma",
+    "category": 2,
+    "marks": 80.9,
+    "timestamp": "2024-01-15T10:38:00Z"
+  },
+  {
+    "candidateId": "C010",
+    "candidateName": "Anita Kumari",
+    "category": 5,
+    "marks": 86.3,
+    "timestamp": "2024-01-15T10:39:00Z"
+  }
+]

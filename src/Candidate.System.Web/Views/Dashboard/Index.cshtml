@@ -1,0 +1,196 @@
+@model Candidate.System.Web.Models.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Candidate Selection Dashboard";
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Candidate Selection Dashboard</h1>
+    
+    <!-- Input Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Add Candidates</h5>
+                </div>
+                <div class="card-body">
+                    <form id="candidateForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="candidateId" placeholder="Candidate ID" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="text" class="form-control" id="candidateName" placeholder="Candidate Name" required>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-control" id="category" required>
+                                    <option value="">Select Category</option>
+                                    <option value="1">GENERAL</option>
+                                    <option value="2">OBC</option>
+                                    <option value="3">SC_ST</option>
+                                    <option value="4">WOMAN</option>
+                                    <option value="5">WOMAN_OBC</option>
+                                    <option value="6">WOMAN_SC_ST</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <input type="number" class="form-control" id="marks" placeholder="Marks" step="0.01" required>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary" onclick="addCandidate()">Add</button>
+                                <button type="button" class="btn btn-success" onclick="processAll()">Process All</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Section -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Candidates</h5>
+                    <h2 id="totalCandidates">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Selected</h5>
+                    <h2 id="selectedCandidates">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5>Pending</h5>
+                    <h2 id="pendingCandidates">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5>Last Updated</h5>
+                    <p id="lastUpdated">-</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Selection Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Candidate ID</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Marks</th>
+                                    <th>Status</th>
+                                    <th>Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let candidates = [];
+
+function addCandidate() {
+    const candidateId = document.getElementById('candidateId').value;
+    const candidateName = document.getElementById('candidateName').value;
+    const category = parseInt(document.getElementById('category').value);
+    const marks = parseFloat(document.getElementById('marks').value);
+
+    if (!candidateId || !candidateName || !category || !marks) {
+        alert('Please fill all fields');
+        return;
+    }
+
+    candidates.push({
+        candidateId: candidateId,
+        candidateName: candidateName,
+        category: category,
+        marks: marks
+    });
+
+    document.getElementById('candidateForm').reset();
+    updatePendingCount();
+}
+
+function processAll() {
+    if (candidates.length === 0) {
+        alert('No candidates to process');
+        return;
+    }
+
+    fetch('/Dashboard/ProcessCandidates', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(candidates)
+    })
+    .then(response => response.json())
+    .then(data => {
+        updateDashboard(data);
+        candidates = [];
+        updatePendingCount();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error processing candidates');
+    });
+}
+
+function updateDashboard(data) {
+    document.getElementById('totalCandidates').textContent = data.totalCandidates;
+    document.getElementById('selectedCandidates').textContent = data.selectedCandidates;
+    document.getElementById('lastUpdated').textContent = new Date(data.lastUpdated).toLocaleString();
+    updateResultsTable(data.results);
+}
+
+function updateResultsTable(results) {
+    const categoryNames = {
+        1: 'GENERAL', 2: 'OBC', 3: 'SC_ST', 4: 'WOMAN', 5: 'WOMAN_OBC', 6: 'WOMAN_SC_ST'
+    };
+
+    const tbody = document.querySelector('#resultsTable tbody');
+    tbody.innerHTML = '';
+
+    results.forEach(result => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td>${result.candidateId}</td>
+            <td>${result.candidateName}</td>
+            <td>${categoryNames[result.category]}</td>
+            <td>${result.marks.toFixed(2)}</td>
+            <td><span class="badge ${result.isSelected ? 'bg-success' : 'bg-danger'}">${result.isSelected ? 'Selected' : 'Not Selected'}</span></td>
+            <td>${result.selectionReason}</td>
+        `;
+    });
+}
+
+function updatePendingCount() {
+    document.getElementById('pendingCandidates').textContent = candidates.length;
+}
+</script>
