@@ -1,11 +1,4 @@
-const reservationConfig = {
-  1: { name: 'GENERAL', percentage: 50, color: 'primary' },
-  2: { name: 'OBC', percentage: 27, color: 'info' },
-  3: { name: 'SC_ST', percentage: 22.5, color: 'warning' },
-  4: { name: 'WOMAN', percentage: 33, color: 'success' },
-  5: { name: 'WOMAN_OBC', percentage: 15, color: 'secondary' },
-  6: { name: 'WOMAN_SC_ST', percentage: 7.5, color: 'danger' }
-}
+import { RESERVATION_CONFIG } from '../../shared/utils/constants'
 
 function ReservationStats({ stats }) {
   return (
@@ -15,7 +8,7 @@ function ReservationStats({ stats }) {
       </div>
       <div className="card-body">
         <div className="row">
-          {Object.entries(reservationConfig).map(([category, config]) => {
+          {Object.entries(RESERVATION_CONFIG).map(([category, config]) => {
             const selected = stats[category] || 0
             const total = stats.totalCandidates || 0
             const percentage = total > 0 ? ((selected / total) * 100).toFixed(1) : 0

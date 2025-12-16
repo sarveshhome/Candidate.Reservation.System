@@ -1,11 +1,4 @@
-const categoryNames = {
-  1: 'GENERAL',
-  2: 'OBC',
-  3: 'SC_ST',
-  4: 'WOMAN',
-  5: 'WOMAN_OBC',
-  6: 'WOMAN_SC_ST'
-}
+import { CATEGORIES } from '../../shared/utils/constants'
 
 function SelectionResults({ results }) {
   if (!results || results.length === 0) {
@@ -44,11 +37,11 @@ function SelectionResults({ results }) {
                 <tr key={index}>
                   <td>{result.candidateId}</td>
                   <td>{result.candidateName}</td>
-                  <td>{categoryNames[result.category]}</td>
+                  <td>{CATEGORIES[result.category]}</td>
                   <td>{result.marks}</td>
                   <td>
                     <span className="badge bg-success">
-                      {categoryNames[result.selectedForCategory]}
+                      {CATEGORIES[result.selectedForCategory]}
                     </span>
                   </td>
                   <td>

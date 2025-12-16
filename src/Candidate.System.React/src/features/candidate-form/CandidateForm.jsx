@@ -1,13 +1,5 @@
 import { useState } from 'react'
-
-const categories = {
-  1: 'GENERAL',
-  2: 'OBC',
-  3: 'SC_ST',
-  4: 'WOMAN',
-  5: 'WOMAN_OBC',
-  6: 'WOMAN_SC_ST'
-}
+import { CATEGORIES } from '../../shared/utils/constants'
 
 function CandidateForm({ onCandidateAdded }) {
   const [candidate, setCandidate] = useState({
@@ -76,7 +68,7 @@ function CandidateForm({ onCandidateAdded }) {
               value={candidate.category}
               onChange={(e) => setCandidate({...candidate, category: parseInt(e.target.value)})}
             >
-              {Object.entries(categories).map(([value, label]) => (
+              {Object.entries(CATEGORIES).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
             </select>
