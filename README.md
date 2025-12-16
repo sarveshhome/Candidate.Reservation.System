@@ -98,10 +98,45 @@ candidate-system/
 5. **Run the React App (Terminal 3):**
    ```bash
    cd src/Candidate.System.React
-   npm install
-   npm start
+   yarn install
+   yarn dev
    ```
-   React App will be available at: `http://localhost:3000`
+   React App will be available at: `http://localhost:5173`
+
+## React Application Structure
+
+The React application follows a feature-based architecture:
+
+```
+src/
+├── features/
+│   ├── candidate-form/
+│   │   ├── CandidateForm.jsx
+│   │   └── index.js
+│   ├── selection-results/
+│   │   ├── SelectionResults.jsx
+│   │   └── index.js
+│   └── reservation-stats/
+│       ├── ReservationStats.jsx
+│       └── index.js
+├── shared/
+│   ├── components/
+│   │   └── Layout.jsx
+│   ├── hooks/
+│   │   └── useCandidateData.js
+│   └── utils/
+│       └── constants.js
+└── App.jsx
+```
+
+### Key Improvements:
+
+- **Feature-based organization** - Each feature has its own folder
+- **Barrel exports** - Clean imports using index.js files
+- **Shared utilities** - Constants moved to shared/utils
+- **Custom hooks** - Data logic extracted to useCandidateData hook
+- **Shared components** - Layout component for common UI structure
+- **DRY principle** - Eliminated duplicate constants across components
 
 ## API Endpoints
 
@@ -189,13 +224,22 @@ Use the web dashboard to:
 
 ## Technology Stack
 
+### Backend
 - **.NET 9.0**
 - **Entity Framework Core** with SQL Server
 - **SignalR** for real-time communication
-- **Bootstrap** for UI
 - **Clean Architecture** pattern
 - **Repository Pattern** for data access
 - **xUnit** and **Moq** for testing
+
+### Frontend
+- **React 18** with JSX
+- **Vite** for fast development and build
+- **Bootstrap 5** for responsive UI
+- **Yarn** for package management
+- **Feature-based architecture**
+
+### DevOps
 - **GitHub Actions** for CI/CD
 - **SonarQube** for code quality
 
