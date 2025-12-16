@@ -3,7 +3,6 @@ using Candidate.System.Application.Interfaces;
 using Candidate.System.Application.Services;
 using Candidate.System.Domain.Entities;
 using Candidate.System.Domain.Enums;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -14,7 +13,6 @@ public class StreamingServiceTests
 {
     private readonly Mock<ICandidateRepository> _mockRepository;
     private readonly Mock<ISelectionService> _mockSelectionService;
-    private readonly Mock<IHubContext<Hub>> _mockHubContext;
     private readonly Mock<ILogger<StreamingService>> _mockLogger;
     private readonly StreamingService _streamingService;
 
@@ -22,17 +20,15 @@ public class StreamingServiceTests
     {
         _mockRepository = new Mock<ICandidateRepository>();
         _mockSelectionService = new Mock<ISelectionService>();
-        _mockHubContext = new Mock<IHubContext<Hub>>();
         _mockLogger = new Mock<ILogger<StreamingService>>();
         _streamingService = new StreamingService(
             _mockRepository.Object,
             _mockSelectionService.Object,
-            _mockHubContext.Object,
             _mockLogger.Object);
     }
 
     [Fact]
-    public async Task ProcessCandidateBatchAsync_ValidCandidates_ProcessesSuccessfully()
+    public async Task ProcessCandidateBatchAsync_ValidCandidates_QueuesSuccessfully()
     {
         // Arrange
         var candidates = new List<CandidateDto>
@@ -40,20 +36,12 @@ public class StreamingServiceTests
             new() { CandidateId = "C1", CandidateName = "Test", Category = CandidateCategory.GENERAL, Marks = 85 }
         };
 
-        var selectionResults = new List<SelectionResultDto>
-        {
-            new() { CandidateId = "C1", IsSelected = true }
-        };
-
-        _mockSelectionService.Setup(x => x.ProcessCandidatesAsync(candidates))
-            .ReturnsAsync(selectionResults);
-
         // Act
         await _streamingService.ProcessCandidateBatchAsync(candidates);
 
-        // Assert
-        _mockRepository.Verify(x => x.AddCandidatesAsync(It.IsAny<IEnumerable<Domain.Entities.Candidate>>()), Times.Once);
-        _mockSelectionService.Verify(x => x.ProcessCandidatesAsync(candidates), Times.Once);
+        // Assert - ProcessCandidateBatchAsync only queues candidates, doesn't process them immediately
+        _mockRepository.Verify(x => x.AddRangeAsync(It.IsAny<IEnumerable<Domain.Entities.Candidate>>()), Times.Never);
+        _mockSelectionService.Verify(x => x.ProcessCandidatesAsync(It.IsAny<IEnumerable<CandidateDto>>()), Times.Never);
     }
 
     [Fact]
@@ -86,6 +74,6 @@ public class StreamingServiceTests
         await _streamingService.ProcessCandidateBatchAsync(candidates);
 
         // Assert
-        _mockRepository.Verify(x => x.AddCandidatesAsync(It.IsAny<IEnumerable<Domain.Entities.Candidate>>()), Times.Never);
+        _mockRepository.Verify(x => x.AddRangeAsync(It.IsAny<IEnumerable<Domain.Entities.Candidate>>()), Times.Never);
     }
 }
