@@ -11,6 +11,7 @@ namespace Candidate.System.Tests.Unit.Controllers;
 
 public class CandidateControllerTests
 {
+    private readonly Mock<ICandidateRepository> _mockRepository;
     private readonly Mock<IStreamingService> _mockStreamingService;
     private readonly Mock<ISelectionService> _mockSelectionService;
     private readonly Mock<ILogger<CandidateController>> _mockLogger;
@@ -18,10 +19,11 @@ public class CandidateControllerTests
 
     public CandidateControllerTests()
     {
+        _mockRepository = new Mock<ICandidateRepository>();
         _mockStreamingService = new Mock<IStreamingService>();
         _mockSelectionService = new Mock<ISelectionService>();
         _mockLogger = new Mock<ILogger<CandidateController>>();
-        _controller = new CandidateController(_mockStreamingService.Object, _mockSelectionService.Object, _mockLogger.Object);
+        _controller = new CandidateController(_mockRepository.Object, _mockStreamingService.Object, _mockSelectionService.Object, _mockLogger.Object);
     }
 
     [Fact]
@@ -79,7 +81,7 @@ public class CandidateControllerTests
         var mockService = new Mock<IStreamingService>();
         mockService.Setup(s => s.ProcessCandidateBatchAsync(candidates))
             .ThrowsAsync(new Exception("Service error"));
-        var controller = new CandidateController(mockService.Object, _mockSelectionService.Object, _mockLogger.Object);
+        var controller = new CandidateController(_mockRepository.Object, mockService.Object, _mockSelectionService.Object, _mockLogger.Object);
 
         // Act
         var result = await controller.SubmitCandidates(candidates);
